@@ -1,0 +1,13 @@
+{
+  "operation_id": "3f2b8c1e-6a4d-4e0b-9c57-1d2e3f4a5b6c",
+  "operation_type": "harvest_batch.create",
+  "schema_version": 1,
+  "payload": {
+    "category": "9d1b7c2a-0e55-4b8f-a1a2-7c3d4e5f6a7b",
+    "quantity": "12.500",
+    "unit_code": "kg",
+    "harvested_on": "2026-11-04",
+    "notes": "Dry, bagged",
+    "client_sync_id": "3f2b8c1e-6a4d-4e0b-9c57-1d2e3f4a5b6c"
+  }
+}

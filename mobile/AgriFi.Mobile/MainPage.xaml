@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="AgriFi.Mobile.MainPage"
+             Title="AgriFi Farmer">
+    <ScrollView>
+        <VerticalStackLayout Padding="24" Spacing="16">
+            <Label Text="AgriFi Farmer" FontSize="28" FontAttributes="Bold" />
+            <Label x:Name="MessageLabel"
+                   TextColor="#9F1239"
+                   IsVisible="False" />
+
+            <VerticalStackLayout x:Name="SignInPanel" Spacing="12">
+                <Label Text="Connect to your AgriFi account" FontSize="18" FontAttributes="Bold" />
+                <Entry x:Name="ApiBaseUrlEntry"
+                       Placeholder="API base URL"
+                       Keyboard="Url"
+                       ClearButtonVisibility="WhileEditing" />
+                <Entry x:Name="EmailEntry" Placeholder="Email" Keyboard="Email" />
+                <Entry x:Name="PasswordEntry" Placeholder="Password" IsPassword="True" />
+                <Button Text="Sign in" Clicked="OnSignInClicked" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout x:Name="WorkspacePanel" IsVisible="False" Spacing="16">
+                <Grid ColumnDefinitions="*,Auto">
+                    <Label x:Name="SignedInLabel" FontAttributes="Bold" VerticalOptions="Center" />
+                    <Button Grid.Column="1" Text="Sign out" Clicked="OnSignOutClicked" />
+                </Grid>
+                <Label x:Name="OfflineLabel"
+                       Text="Offline mode: new batches will be saved on this device until sync succeeds."
+                       TextColor="#92400E"
+                       IsVisible="False" />
+
+                <Border Padding="16" Stroke="#CBD5E1" StrokeShape="RoundRectangle 12">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Farmer profile" FontSize="18" FontAttributes="Bold" />
+                        <Entry x:Name="DisplayNameEntry" Placeholder="Display name" />
+                        <Entry x:Name="RegionEntry" Placeholder="Region" />
+                        <Entry x:Name="LocationEntry" Placeholder="Location" />
+                        <Button Text="Save profile" Clicked="OnSaveProfileClicked" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border Padding="16" Stroke="#CBD5E1" StrokeShape="RoundRectangle 12">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Record harvest batch" FontSize="18" FontAttributes="Bold" />
+                        <Picker x:Name="CategoryPicker"
+                                Title="Crop category"
+                                ItemDisplayBinding="{Binding Name}" />
+                        <Entry x:Name="QuantityEntry"
+                               Placeholder="Quantity"
+                               Keyboard="Numeric" />
+                        <Picker x:Name="UnitPicker" Title="Unit" />
+                        <DatePicker x:Name="HarvestDatePicker" />
+                        <Editor x:Name="NotesEditor"
+                                Placeholder="Notes (optional)"
+                                AutoSize="TextChanges"
+                                MaxLength="2000" />
+                        <Button x:Name="SaveBatchButton" Text="Save on this device" Clicked="OnSaveBatchClicked" />
+                        <Button x:Name="CancelEditButton" Text="Cancel editing" IsVisible="False" Clicked="OnCancelEditClicked" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                    <Button Text="Sync pending batches" Clicked="OnSyncClicked" />
+                    <Button Grid.Column="1" Text="Retry failed batches" Clicked="OnRetryFailedClicked" />
+                </Grid>
+
+                <Label Text="Harvest batches on this device" FontSize="18" FontAttributes="Bold" />
+                <CollectionView x:Name="BatchCollection" HeightRequest="340">
+                    <CollectionView.EmptyView>
+                        <Label Text="No batches saved yet." Padding="8" />
+                    </CollectionView.EmptyView>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border Margin="0,4" Padding="12" Stroke="#E2E8F0" StrokeShape="RoundRectangle 10">
+                                <VerticalStackLayout Spacing="4">
+                                    <Label Text="{Binding CategoryName}" FontAttributes="Bold" />
+                                    <Label Text="{Binding QuantityDisplay}" FontSize="13" />
+                                    <Label Text="{Binding StatusDisplay}" FontSize="13" FontAttributes="Bold" />
+                                    <Label Text="{Binding LastError}" FontSize="12" TextColor="#9F1239" />
+                                    <Button Text="{Binding ActionText}"
+                                            IsVisible="{Binding HasAction}"
+                                            Clicked="OnBatchActionClicked" />
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -1,0 +1,91 @@
+name: Clients
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  angular:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+      - name: Install backend for isolated browser tests
+        run: python -m pip install -r ../backend/requirements.txt
+      - run: npm ci
+      - name: Install Chromium for browser tests
+        run: npx playwright install --with-deps chromium
+      - name: Angular unit tests
+        run: npm test 2>&1 | tee ../angular-tests.log; exit ${PIPESTATUS[0]}
+      - name: Test summary
+        if: always()
+        run: grep -E "Test Files|Tests " ../angular-tests.log || true
+      - name: Angular browser E2E
+        run: npm run e2e
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: angular-e2e-results
+          path: |
+            web/test-results/
+            web/playwright-report/
+      - run: npm run build
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: angular-test-log
+          path: angular-tests.log
+
+  maui-core:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+      - name: MAUI Core xUnit tests
+        run: >
+          dotnet test mobile/AgriFi.Mobile.Tests
+          --logger "trx;LogFileName=maui-core.trx"
+          --logger "console;verbosity=normal"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: maui-core-trx
+          path: mobile/AgriFi.Mobile.Tests/TestResults/*.trx
+
+  maui-android-build:
+    runs-on: windows-2025
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+      - name: Install MAUI Android workload
+        run: dotnet workload install maui-android
+      - name: Restore Core and Android projects
+        run: |
+          dotnet restore mobile/AgriFi.Mobile.Core/AgriFi.Mobile.Core.csproj
+          dotnet restore mobile/AgriFi.Mobile/AgriFi.Mobile.csproj -p:TargetFrameworks=net10.0-android
+          dotnet restore mobile/AgriFi.Mobile.Core/AgriFi.Mobile.Core.csproj
+      - name: Compile Android target
+        run: dotnet build mobile/AgriFi.Mobile/AgriFi.Mobile.csproj -p:TargetFrameworks=net10.0-android --no-restore

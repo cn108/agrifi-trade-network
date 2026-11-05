@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+*$eggs
+.eggs/
+dev-requirements.txt
+.git/
+.env
+.venv/
+env/
+.vscode/
+*.swp
+*.swo

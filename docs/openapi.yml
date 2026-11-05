@@ -1,0 +1,3192 @@
+openapi: 3.0.3
+info:
+  title: AgriFi Trade Network API
+  version: 1.0.0
+  description: 'Nigerian-first B2B agricultural marketplace. Payments, refunds, settlements
+    and the ledger are SIMULATED: no real money moves. Money is integer kobo.'
+paths:
+  /api/v1/audit-events/:
+    get:
+      operationId: audit_events_list
+      description: Read-only audit trail for operations administrators.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - audit-events
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAuditEventList'
+          description: ''
+  /api/v1/audit-events/{id}/:
+    get:
+      operationId: audit_events_retrieve
+      description: Read-only audit trail for operations administrators.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this audit event.
+        required: true
+      tags:
+      - audit-events
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditEvent'
+          description: ''
+  /api/v1/auth/login/:
+    post:
+      operationId: auth_login_create
+      description: |-
+        Takes a set of user credentials and returns an access and refresh JSON web
+        token pair to prove the authentication of those credentials.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+        required: true
+      responses:
+        '200':
+          description: No response body
+  /api/v1/auth/logout/:
+    post:
+      operationId: auth_logout_create
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LogoutRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LogoutRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LogoutRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/v1/auth/me/:
+    get:
+      operationId: auth_me_retrieve
+      tags:
+      - auth
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+          description: ''
+    put:
+      operationId: auth_me_update
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserProfileRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserProfileRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserProfileRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+          description: ''
+    patch:
+      operationId: auth_me_partial_update
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserProfileRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserProfileRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserProfileRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+          description: ''
+  /api/v1/auth/profiles/buyer/:
+    get:
+      operationId: auth_profiles_buyer_retrieve
+      description: Caller's own buyer profile. Verification status is read-only.
+      tags:
+      - auth
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BuyerProfile'
+          description: ''
+    patch:
+      operationId: auth_profiles_buyer_partial_update
+      description: Caller's own buyer profile. Verification status is read-only.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedBuyerProfileRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedBuyerProfileRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedBuyerProfileRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BuyerProfile'
+          description: ''
+  /api/v1/auth/profiles/farmer/:
+    get:
+      operationId: auth_profiles_farmer_retrieve
+      description: Caller's own farmer profile. Verification status is read-only.
+      tags:
+      - auth
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FarmerProfile'
+          description: ''
+    patch:
+      operationId: auth_profiles_farmer_partial_update
+      description: Caller's own farmer profile. Verification status is read-only.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedFarmerProfileRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedFarmerProfileRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedFarmerProfileRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FarmerProfile'
+          description: ''
+  /api/v1/auth/refresh/:
+    post:
+      operationId: auth_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RefreshRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RefreshRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Refresh'
+          description: ''
+  /api/v1/auth/register/:
+    post:
+      operationId: auth_register_create
+      description: |-
+        Registration answers identically whether or not the email is already registered, so
+        the endpoint cannot be used to discover which emails have accounts. No account is
+        created for an existing email and the existing account is never modified.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistrationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RegistrationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RegistrationRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Registration'
+          description: ''
+  /api/v1/categories/:
+    get:
+      operationId: categories_list
+      description: |-
+        Crop categories. Any authenticated user can read active categories;
+        only operations administrators can create, edit or deactivate. No delete.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - categories
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCropCategoryList'
+          description: ''
+    post:
+      operationId: categories_create
+      description: |-
+        Crop categories. Any authenticated user can read active categories;
+        only operations administrators can create, edit or deactivate. No delete.
+      tags:
+      - categories
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CropCategoryRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CropCategoryRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CropCategoryRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CropCategory'
+          description: ''
+  /api/v1/categories/{id}/:
+    get:
+      operationId: categories_retrieve
+      description: |-
+        Crop categories. Any authenticated user can read active categories;
+        only operations administrators can create, edit or deactivate. No delete.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this crop category.
+        required: true
+      tags:
+      - categories
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CropCategory'
+          description: ''
+    patch:
+      operationId: categories_partial_update
+      description: |-
+        Crop categories. Any authenticated user can read active categories;
+        only operations administrators can create, edit or deactivate. No delete.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this crop category.
+        required: true
+      tags:
+      - categories
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCropCategoryRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCropCategoryRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCropCategoryRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CropCategory'
+          description: ''
+  /api/v1/disputes/:
+    get:
+      operationId: disputes_list
+      description: |-
+        Disputes. Visible to the order's buyer and seller and to operations administrators;
+        only operations administrators resolve them.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - disputes
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedDisputeList'
+          description: ''
+  /api/v1/disputes/{id}/:
+    get:
+      operationId: disputes_retrieve
+      description: |-
+        Disputes. Visible to the order's buyer and seller and to operations administrators;
+        only operations administrators resolve them.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this dispute.
+        required: true
+      tags:
+      - disputes
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dispute'
+          description: ''
+  /api/v1/disputes/{id}/resolve/:
+    post:
+      operationId: disputes_resolve_create
+      description: |-
+        Disputes. Visible to the order's buyer and seller and to operations administrators;
+        only operations administrators resolve them.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this dispute.
+        required: true
+      tags:
+      - disputes
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dispute'
+          description: ''
+  /api/v1/finance/journal-entries/:
+    get:
+      operationId: finance_journal_entries_list
+      description: Read-only posted simulated journals and their balanced lines.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - finance
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedJournalList'
+          description: ''
+  /api/v1/finance/journal-entries/{id}/:
+    get:
+      operationId: finance_journal_entries_retrieve
+      description: Read-only posted simulated journals and their balanced lines.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this journal.
+        required: true
+      tags:
+      - finance
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Journal'
+          description: ''
+  /api/v1/finance/ledger-accounts/:
+    get:
+      operationId: finance_ledger_accounts_list
+      description: Read-only chart of accounts with derived (never stored) balances.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - finance
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedLedgerAccountList'
+          description: ''
+  /api/v1/finance/reports/:
+    get:
+      operationId: finance_reports_retrieve
+      description: |-
+        Read-only simulated finance report derived from the immutable journal.
+
+        Optional `start` (inclusive) and `end` (exclusive) ISO-8601 datetimes.
+      parameters:
+      - in: query
+        name: end
+        schema:
+          type: string
+          format: date-time
+        description: Exclusive ISO 8601 end (with offset).
+      - in: query
+        name: start
+        schema:
+          type: string
+          format: date-time
+        description: Inclusive ISO 8601 start (with offset).
+      tags:
+      - finance
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/v1/harvest-batches/:
+    get:
+      operationId: harvest_batches_list
+      description: |-
+        Harvest batches. Farmers create, read and edit only their own batches.
+        Operations administrators have read-only access to all batches. Buyers and
+        finance operators are denied. There is no delete.
+
+        Creation with a `client_sync_id` is idempotent per (farmer, scope, key):
+
+        * First request: the batch and an idempotency record are created in one
+          transaction; the response is 201.
+        * Identical retry: the originally stored response is returned with 200, even
+          if the batch was edited or its category deactivated afterwards.
+        * Same key with a different request: 409.
+
+        The unique constraint on the idempotency record is authoritative, so concurrent
+        requests with one key create at most one batch.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - harvest-batches
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedHarvestBatchList'
+          description: ''
+    post:
+      operationId: harvest_batches_create
+      description: |-
+        Harvest batches. Farmers create, read and edit only their own batches.
+        Operations administrators have read-only access to all batches. Buyers and
+        finance operators are denied. There is no delete.
+
+        Creation with a `client_sync_id` is idempotent per (farmer, scope, key):
+
+        * First request: the batch and an idempotency record are created in one
+          transaction; the response is 201.
+        * Identical retry: the originally stored response is returned with 200, even
+          if the batch was edited or its category deactivated afterwards.
+        * Same key with a different request: 409.
+
+        The unique constraint on the idempotency record is authoritative, so concurrent
+        requests with one key create at most one batch.
+      tags:
+      - harvest-batches
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HarvestBatchRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/HarvestBatchRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/HarvestBatchRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HarvestBatch'
+          description: ''
+  /api/v1/harvest-batches/{id}/:
+    get:
+      operationId: harvest_batches_retrieve
+      description: |-
+        Harvest batches. Farmers create, read and edit only their own batches.
+        Operations administrators have read-only access to all batches. Buyers and
+        finance operators are denied. There is no delete.
+
+        Creation with a `client_sync_id` is idempotent per (farmer, scope, key):
+
+        * First request: the batch and an idempotency record are created in one
+          transaction; the response is 201.
+        * Identical retry: the originally stored response is returned with 200, even
+          if the batch was edited or its category deactivated afterwards.
+        * Same key with a different request: 409.
+
+        The unique constraint on the idempotency record is authoritative, so concurrent
+        requests with one key create at most one batch.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this harvest batch.
+        required: true
+      tags:
+      - harvest-batches
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HarvestBatch'
+          description: ''
+    patch:
+      operationId: harvest_batches_partial_update
+      description: |-
+        Harvest batches. Farmers create, read and edit only their own batches.
+        Operations administrators have read-only access to all batches. Buyers and
+        finance operators are denied. There is no delete.
+
+        Creation with a `client_sync_id` is idempotent per (farmer, scope, key):
+
+        * First request: the batch and an idempotency record are created in one
+          transaction; the response is 201.
+        * Identical retry: the originally stored response is returned with 200, even
+          if the batch was edited or its category deactivated afterwards.
+        * Same key with a different request: 409.
+
+        The unique constraint on the idempotency record is authoritative, so concurrent
+        requests with one key create at most one batch.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this harvest batch.
+        required: true
+      tags:
+      - harvest-batches
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedHarvestBatchRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedHarvestBatchRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedHarvestBatchRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HarvestBatch'
+          description: ''
+  /api/v1/harvest-batches/{id}/accept/:
+    post:
+      operationId: harvest_batches_accept_create
+      description: 'Accept a submitted batch: posts a RECEIPT stock movement. Operations
+        admin only.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this harvest batch.
+        required: true
+      tags:
+      - harvest-batches
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HarvestBatchRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/HarvestBatchRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/HarvestBatchRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HarvestBatch'
+          description: ''
+  /api/v1/harvest-batches/{id}/reject/:
+    post:
+      operationId: harvest_batches_reject_create
+      description: Reject a submitted batch. Operations admin only.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this harvest batch.
+        required: true
+      tags:
+      - harvest-batches
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HarvestBatchRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/HarvestBatchRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/HarvestBatchRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HarvestBatch'
+          description: ''
+  /api/v1/listings/:
+    get:
+      operationId: listings_list
+      description: |-
+        Marketplace listings.
+
+        * Buyers and other users see only active listings (active category and seller).
+        * Farmers additionally see all of their own listings.
+        * Only farmers can create; the seller is always the authenticated user.
+        * Updates are limited to the owner or an operations administrator.
+        * Only administrators can suspend; there is no delete (archive instead).
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - listings
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedListingList'
+          description: ''
+    post:
+      operationId: listings_create
+      description: |-
+        Marketplace listings.
+
+        * Buyers and other users see only active listings (active category and seller).
+        * Farmers additionally see all of their own listings.
+        * Only farmers can create; the seller is always the authenticated user.
+        * Updates are limited to the owner or an operations administrator.
+        * Only administrators can suspend; there is no delete (archive instead).
+      tags:
+      - listings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ListingRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ListingRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ListingRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Listing'
+          description: ''
+  /api/v1/listings/{id}/:
+    get:
+      operationId: listings_retrieve
+      description: |-
+        Marketplace listings.
+
+        * Buyers and other users see only active listings (active category and seller).
+        * Farmers additionally see all of their own listings.
+        * Only farmers can create; the seller is always the authenticated user.
+        * Updates are limited to the owner or an operations administrator.
+        * Only administrators can suspend; there is no delete (archive instead).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this listing.
+        required: true
+      tags:
+      - listings
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Listing'
+          description: ''
+    patch:
+      operationId: listings_partial_update
+      description: |-
+        Marketplace listings.
+
+        * Buyers and other users see only active listings (active category and seller).
+        * Farmers additionally see all of their own listings.
+        * Only farmers can create; the seller is always the authenticated user.
+        * Updates are limited to the owner or an operations administrator.
+        * Only administrators can suspend; there is no delete (archive instead).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this listing.
+        required: true
+      tags:
+      - listings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedListingRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedListingRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedListingRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Listing'
+          description: ''
+  /api/v1/listings/{id}/allocate/:
+    post:
+      operationId: listings_allocate_create
+      description: |-
+        POST /listings/{id}/allocate/ and /deallocate/ — move quantity between an accepted
+        batch and the seller's own listing. Seller (farmer) only.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - listings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AllocationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AllocationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AllocationRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StockMovement'
+          description: ''
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StockMovement'
+          description: ''
+  /api/v1/listings/{id}/deallocate/:
+    post:
+      operationId: listings_deallocate_create
+      description: |-
+        POST /listings/{id}/allocate/ and /deallocate/ — move quantity between an accepted
+        batch and the seller's own listing. Seller (farmer) only.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - listings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AllocationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AllocationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AllocationRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StockMovement'
+          description: ''
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StockMovement'
+          description: ''
+  /api/v1/listings/{id}/stock/:
+    get:
+      operationId: listings_stock_retrieve
+      description: |-
+        GET /listings/{id}/stock/ — on_hand, reserved and available, always computed from
+        the stock ledger. Visible to the listing's seller and operations administrators.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - listings
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/v1/orders/:
+    get:
+      operationId: orders_list
+      description: |-
+        Orders (single seller, server-priced).
+
+        * `POST /orders/` (buyers): body `client_request_id`, `items[{listing, quantity}]`,
+          `delivery_address`, `notes`. Prices and totals are computed on the server; stock is
+          reserved atomically. Idempotent on `client_request_id`: the first call returns 201,
+          an identical retry returns the stored response with 200, a different payload 409.
+        * `GET /orders/`, `GET /orders/{id}/`: buyer and seller see their own orders,
+          operations administrators see all; everyone else gets 404 (or 403 by role).
+        * Actions: `confirm`, `ship`, `deliver` (seller), `complete` (buyer), `cancel`
+          (pending only; buyer, seller or operations administrator), `dispute` (buyer).
+        Transitions are explicit; see `agrifi.orders.services.TRANSITIONS`.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - orders
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedOrderList'
+          description: ''
+    post:
+      operationId: orders_create
+      description: |-
+        Orders (single seller, server-priced).
+
+        * `POST /orders/` (buyers): body `client_request_id`, `items[{listing, quantity}]`,
+          `delivery_address`, `notes`. Prices and totals are computed on the server; stock is
+          reserved atomically. Idempotent on `client_request_id`: the first call returns 201,
+          an identical retry returns the stored response with 200, a different payload 409.
+        * `GET /orders/`, `GET /orders/{id}/`: buyer and seller see their own orders,
+          operations administrators see all; everyone else gets 404 (or 403 by role).
+        * Actions: `confirm`, `ship`, `deliver` (seller), `complete` (buyer), `cancel`
+          (pending only; buyer, seller or operations administrator), `dispute` (buyer).
+        Transitions are explicit; see `agrifi.orders.services.TRANSITIONS`.
+      tags:
+      - orders
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: ''
+  /api/v1/orders/{id}/:
+    get:
+      operationId: orders_retrieve
+      description: |-
+        Orders (single seller, server-priced).
+
+        * `POST /orders/` (buyers): body `client_request_id`, `items[{listing, quantity}]`,
+          `delivery_address`, `notes`. Prices and totals are computed on the server; stock is
+          reserved atomically. Idempotent on `client_request_id`: the first call returns 201,
+          an identical retry returns the stored response with 200, a different payload 409.
+        * `GET /orders/`, `GET /orders/{id}/`: buyer and seller see their own orders,
+          operations administrators see all; everyone else gets 404 (or 403 by role).
+        * Actions: `confirm`, `ship`, `deliver` (seller), `complete` (buyer), `cancel`
+          (pending only; buyer, seller or operations administrator), `dispute` (buyer).
+        Transitions are explicit; see `agrifi.orders.services.TRANSITIONS`.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this order.
+        required: true
+      tags:
+      - orders
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: ''
+  /api/v1/orders/{id}/cancel/:
+    post:
+      operationId: orders_cancel_create
+      description: Cancel a pending order and release its stock reservations.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this order.
+        required: true
+      tags:
+      - orders
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: ''
+  /api/v1/orders/{id}/complete/:
+    post:
+      operationId: orders_complete_create
+      description: Buyer acknowledges delivery.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this order.
+        required: true
+      tags:
+      - orders
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: ''
+  /api/v1/orders/{id}/confirm/:
+    post:
+      operationId: orders_confirm_create
+      description: Seller accepts the order; reserved stock becomes sold (SALE movements).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this order.
+        required: true
+      tags:
+      - orders
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: ''
+  /api/v1/orders/{id}/deliver/:
+    post:
+      operationId: orders_deliver_create
+      description: |-
+        Orders (single seller, server-priced).
+
+        * `POST /orders/` (buyers): body `client_request_id`, `items[{listing, quantity}]`,
+          `delivery_address`, `notes`. Prices and totals are computed on the server; stock is
+          reserved atomically. Idempotent on `client_request_id`: the first call returns 201,
+          an identical retry returns the stored response with 200, a different payload 409.
+        * `GET /orders/`, `GET /orders/{id}/`: buyer and seller see their own orders,
+          operations administrators see all; everyone else gets 404 (or 403 by role).
+        * Actions: `confirm`, `ship`, `deliver` (seller), `complete` (buyer), `cancel`
+          (pending only; buyer, seller or operations administrator), `dispute` (buyer).
+        Transitions are explicit; see `agrifi.orders.services.TRANSITIONS`.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this order.
+        required: true
+      tags:
+      - orders
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: ''
+  /api/v1/orders/{id}/dispute/:
+    post:
+      operationId: orders_dispute_create
+      description: Buyer opens a dispute on a confirmed, shipped or delivered order.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this order.
+        required: true
+      tags:
+      - orders
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: ''
+  /api/v1/orders/{id}/ship/:
+    post:
+      operationId: orders_ship_create
+      description: |-
+        Orders (single seller, server-priced).
+
+        * `POST /orders/` (buyers): body `client_request_id`, `items[{listing, quantity}]`,
+          `delivery_address`, `notes`. Prices and totals are computed on the server; stock is
+          reserved atomically. Idempotent on `client_request_id`: the first call returns 201,
+          an identical retry returns the stored response with 200, a different payload 409.
+        * `GET /orders/`, `GET /orders/{id}/`: buyer and seller see their own orders,
+          operations administrators see all; everyone else gets 404 (or 403 by role).
+        * Actions: `confirm`, `ship`, `deliver` (seller), `complete` (buyer), `cancel`
+          (pending only; buyer, seller or operations administrator), `dispute` (buyer).
+        Transitions are explicit; see `agrifi.orders.services.TRANSITIONS`.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this order.
+        required: true
+      tags:
+      - orders
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: ''
+  /api/v1/simulated-payments/:
+    get:
+      operationId: simulated_payments_list
+      description: Simulated only. No card/bank details are accepted; no money moves.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - simulated-payments
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSimulatedPaymentList'
+          description: ''
+    post:
+      operationId: simulated_payments_create
+      description: Simulated only. No card/bank details are accepted; no money moves.
+      tags:
+      - simulated-payments
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimulatedPayment'
+          description: ''
+  /api/v1/simulated-payments/{id}/:
+    get:
+      operationId: simulated_payments_retrieve
+      description: Simulated only. No card/bank details are accepted; no money moves.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this simulated payment.
+        required: true
+      tags:
+      - simulated-payments
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimulatedPayment'
+          description: ''
+  /api/v1/simulated-refunds/:
+    get:
+      operationId: simulated_refunds_list
+      description: Operations-approved refund record. It is not a payment-provider
+        operation.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - simulated-refunds
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedRefundList'
+          description: ''
+    post:
+      operationId: simulated_refunds_create
+      description: Operations-approved refund record. It is not a payment-provider
+        operation.
+      tags:
+      - simulated-refunds
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Refund'
+          description: ''
+  /api/v1/simulated-refunds/{id}/:
+    get:
+      operationId: simulated_refunds_retrieve
+      description: Operations-approved refund record. It is not a payment-provider
+        operation.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this refund.
+        required: true
+      tags:
+      - simulated-refunds
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Refund'
+          description: ''
+  /api/v1/simulated-settlements/:
+    get:
+      operationId: simulated_settlements_list
+      description: Simulated internal settlement record. Never initiates a bank transfer.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - simulated-settlements
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSettlementList'
+          description: ''
+    post:
+      operationId: simulated_settlements_create
+      description: Simulated internal settlement record. Never initiates a bank transfer.
+      tags:
+      - simulated-settlements
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Settlement'
+          description: ''
+  /api/v1/simulated-settlements/{id}/:
+    get:
+      operationId: simulated_settlements_retrieve
+      description: Simulated internal settlement record. Never initiates a bank transfer.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this settlement.
+        required: true
+      tags:
+      - simulated-settlements
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Settlement'
+          description: ''
+  /api/v1/stock-movements/:
+    get:
+      operationId: stock_movements_list
+      description: |-
+        GET /stock-movements/ — read-only ledger. Farmers see movements of their own
+        batches; operations administrators see all.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - stock-movements
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStockMovementList'
+          description: ''
+  /api/v1/sync/operations/:
+    post:
+      operationId: sync_operations_create
+      description: |-
+        POST /sync/operations/ — apply an operation exactly once.
+
+        201 first application, 200 identical replay (stored result, no new effects). The same
+        operation id with a different payload is 409. Other failures use the error envelope.
+      tags:
+      - sync
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SyncOperationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SyncOperationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SyncOperationRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+        '201':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/v1/sync/operations/{operation_id}/:
+    get:
+      operationId: sync_operations_retrieve
+      description: |-
+        GET /sync/operations/{operation_id}/ — the receipt of an applied operation.
+
+        Lets a client that lost a response (ambiguous timeout) learn the outcome without
+        resending. 404 means the operation has not been applied. Scoped to the caller.
+      parameters:
+      - in: path
+        name: operation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - sync
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+components:
+  schemas:
+    AccountTypeEnum:
+      enum:
+      - asset
+      - liability
+      - equity
+      - revenue
+      - expense
+      type: string
+      description: |-
+        * `asset` - Asset (simulated)
+        * `liability` - Liability (simulated)
+        * `equity` - Equity
+        * `revenue` - Revenue
+        * `expense` - Expense
+    AllocationRequest:
+      type: object
+      properties:
+        batch:
+          type: string
+          format: uuid
+        quantity:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,9}(?:\.\d{0,3})?$
+        client_request_id:
+          type: string
+          format: uuid
+      required:
+      - batch
+      - client_request_id
+      - quantity
+    AuditEvent:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        actor:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+        action:
+          type: string
+          readOnly: true
+        object_type:
+          type: string
+          readOnly: true
+        object_id:
+          type: string
+          readOnly: true
+        request_id:
+          type: string
+          readOnly: true
+        metadata:
+          readOnly: true
+      required:
+      - action
+      - actor
+      - created_at
+      - id
+      - metadata
+      - object_id
+      - object_type
+      - request_id
+    BuyerProfile:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        business_name:
+          type: string
+          maxLength: 200
+        region:
+          type: string
+          maxLength: 100
+        location:
+          type: string
+          maxLength: 200
+        verification_status:
+          allOf:
+          - $ref: '#/components/schemas/VerificationStatusEnum'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - business_name
+      - created_at
+      - id
+      - updated_at
+      - verification_status
+    CropCategory:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        slug:
+          type: string
+          maxLength: 120
+          pattern: ^[-a-zA-Z0-9_]+$
+        description:
+          type: string
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - name
+      - updated_at
+    CropCategoryRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        slug:
+          type: string
+          minLength: 1
+          maxLength: 120
+          pattern: ^[-a-zA-Z0-9_]+$
+        description:
+          type: string
+        is_active:
+          type: boolean
+      required:
+      - name
+    Dispute:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        order:
+          type: string
+          format: uuid
+          readOnly: true
+        opened_by:
+          type: string
+          format: uuid
+          readOnly: true
+        reason:
+          type: string
+          readOnly: true
+        previous_order_status:
+          type: string
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/DisputeStatusEnum'
+          readOnly: true
+          default: open
+        outcome:
+          allOf:
+          - $ref: '#/components/schemas/OutcomeEnum'
+          readOnly: true
+        resolution_notes:
+          type: string
+          readOnly: true
+        resolved_by:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        resolved_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+      required:
+      - created_at
+      - id
+      - opened_by
+      - order
+      - outcome
+      - previous_order_status
+      - reason
+      - resolution_notes
+      - resolved_at
+      - resolved_by
+      - status
+    DisputeStatusEnum:
+      enum:
+      - open
+      - resolved
+      type: string
+      description: |-
+        * `open` - Open
+        * `resolved` - Resolved
+    FarmerProfile:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        display_name:
+          type: string
+          maxLength: 150
+        region:
+          type: string
+          maxLength: 100
+        location:
+          type: string
+          maxLength: 200
+        verification_status:
+          allOf:
+          - $ref: '#/components/schemas/VerificationStatusEnum'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - display_name
+      - id
+      - updated_at
+      - verification_status
+    HarvestBatch:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        farmer:
+          type: string
+          format: uuid
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/HarvestBatchStatusEnum'
+          readOnly: true
+        reviewed_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        rejection_reason:
+          type: string
+          readOnly: true
+        category:
+          type: string
+          format: uuid
+        quantity:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,9}(?:\.\d{0,3})?$
+        unit_code:
+          $ref: '#/components/schemas/UnitCodeEnum'
+        harvested_on:
+          type: string
+          format: date
+        client_sync_id:
+          type: string
+          format: uuid
+          nullable: true
+        resubmission_of:
+          type: string
+          format: uuid
+          nullable: true
+        correction_id:
+          type: string
+          nullable: true
+          readOnly: true
+        notes:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - category
+      - correction_id
+      - created_at
+      - farmer
+      - harvested_on
+      - id
+      - quantity
+      - rejection_reason
+      - reviewed_at
+      - status
+      - unit_code
+      - updated_at
+    HarvestBatchRequest:
+      type: object
+      properties:
+        category:
+          type: string
+          format: uuid
+        quantity:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,9}(?:\.\d{0,3})?$
+        unit_code:
+          $ref: '#/components/schemas/UnitCodeEnum'
+        harvested_on:
+          type: string
+          format: date
+        client_sync_id:
+          type: string
+          format: uuid
+          nullable: true
+        resubmission_of:
+          type: string
+          format: uuid
+          nullable: true
+        notes:
+          type: string
+      required:
+      - category
+      - harvested_on
+      - quantity
+      - unit_code
+    HarvestBatchStatusEnum:
+      enum:
+      - submitted
+      - accepted
+      - rejected
+      type: string
+      description: |-
+        * `submitted` - Submitted
+        * `accepted` - Accepted
+        * `rejected` - Rejected
+    Journal:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        reference:
+          type: string
+          readOnly: true
+        source_type:
+          type: string
+          readOnly: true
+        source_id:
+          type: string
+          format: uuid
+          readOnly: true
+        kind:
+          type: string
+          readOnly: true
+        currency:
+          type: string
+          readOnly: true
+        debit_total_minor:
+          type: integer
+          readOnly: true
+        credit_total_minor:
+          type: integer
+          readOnly: true
+        memo:
+          type: string
+          readOnly: true
+        reversal_of:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+        posted_at:
+          type: string
+          format: date-time
+          readOnly: true
+        lines:
+          type: array
+          items:
+            $ref: '#/components/schemas/JournalLine'
+          readOnly: true
+      required:
+      - credit_total_minor
+      - currency
+      - debit_total_minor
+      - id
+      - kind
+      - lines
+      - memo
+      - posted_at
+      - reference
+      - reversal_of
+      - source_id
+      - source_type
+    JournalLine:
+      type: object
+      properties:
+        line_number:
+          type: integer
+          readOnly: true
+        account_code:
+          type: string
+          readOnly: true
+        account_name:
+          type: string
+          readOnly: true
+        debit_minor:
+          type: integer
+          readOnly: true
+        credit_minor:
+          type: integer
+          readOnly: true
+        memo:
+          type: string
+          readOnly: true
+      required:
+      - account_code
+      - account_name
+      - credit_minor
+      - debit_minor
+      - line_number
+      - memo
+    LedgerAccount:
+      type: object
+      properties:
+        code:
+          type: string
+          readOnly: true
+        name:
+          type: string
+          readOnly: true
+        account_type:
+          allOf:
+          - $ref: '#/components/schemas/AccountTypeEnum'
+          readOnly: true
+        currency:
+          type: string
+          readOnly: true
+        debit_balance_minor:
+          type: integer
+          readOnly: true
+      required:
+      - account_type
+      - code
+      - currency
+      - debit_balance_minor
+      - name
+    Listing:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        seller:
+          type: string
+          format: uuid
+          readOnly: true
+        seller_name:
+          type: string
+          readOnly: true
+        category:
+          type: string
+          format: uuid
+        name:
+          type: string
+          maxLength: 150
+        description:
+          type: string
+        unit_code:
+          $ref: '#/components/schemas/UnitCodeEnum'
+        unit_price_minor:
+          type: integer
+          minimum: 1
+        currency:
+          type: string
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/ListingStatusEnum'
+        available_quantity:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - available_quantity
+      - category
+      - created_at
+      - currency
+      - id
+      - name
+      - seller
+      - seller_name
+      - unit_code
+      - unit_price_minor
+      - updated_at
+    ListingRequest:
+      type: object
+      properties:
+        category:
+          type: string
+          format: uuid
+        name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        description:
+          type: string
+        unit_code:
+          $ref: '#/components/schemas/UnitCodeEnum'
+        unit_price_minor:
+          type: integer
+          minimum: 1
+        status:
+          $ref: '#/components/schemas/ListingStatusEnum'
+      required:
+      - category
+      - name
+      - unit_code
+      - unit_price_minor
+    ListingStatusEnum:
+      enum:
+      - draft
+      - active
+      - paused
+      - suspended
+      - archived
+      type: string
+      description: |-
+        * `draft` - Draft
+        * `active` - Active
+        * `paused` - Paused
+        * `suspended` - Suspended by administrator
+        * `archived` - Archived
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          writeOnly: true
+          minLength: 1
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - email
+      - password
+    LogoutRequest:
+      type: object
+      properties:
+        refresh:
+          type: string
+          minLength: 1
+      required:
+      - refresh
+    MovementTypeEnum:
+      enum:
+      - receipt
+      - allocation
+      - deallocation
+      - sale
+      type: string
+      description: |-
+        * `receipt` - Receipt (batch accepted)
+        * `allocation` - Allocation to listing
+        * `deallocation` - Return from listing
+        * `sale` - Sale (reservation consumed)
+    OperationTypeEnum:
+      enum:
+      - harvest_batch.create
+      type: string
+      description: '* `harvest_batch.create` - harvest_batch.create'
+    Order:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        buyer:
+          type: string
+          format: uuid
+          readOnly: true
+        seller:
+          type: string
+          format: uuid
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/OrderStatusEnum'
+          readOnly: true
+        currency:
+          type: string
+          readOnly: true
+        total_minor:
+          type: integer
+          readOnly: true
+        delivery_address:
+          type: string
+          readOnly: true
+        notes:
+          type: string
+          readOnly: true
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+          readOnly: true
+        history:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderHistory'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - buyer
+      - created_at
+      - currency
+      - delivery_address
+      - history
+      - id
+      - items
+      - notes
+      - seller
+      - status
+      - total_minor
+      - updated_at
+    OrderHistory:
+      type: object
+      properties:
+        from_status:
+          type: string
+          readOnly: true
+        to_status:
+          type: string
+          readOnly: true
+        actor:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+        reason:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - actor
+      - created_at
+      - from_status
+      - reason
+      - to_status
+    OrderItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        listing:
+          type: string
+          format: uuid
+          readOnly: true
+        listing_name:
+          type: string
+          readOnly: true
+        category_name:
+          type: string
+          readOnly: true
+        seller_name:
+          type: string
+          readOnly: true
+        unit_code:
+          type: string
+          readOnly: true
+        unit_price_minor:
+          type: integer
+          readOnly: true
+        quantity:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,9}(?:\.\d{0,3})?$
+          readOnly: true
+        line_total_minor:
+          type: integer
+          readOnly: true
+      required:
+      - category_name
+      - id
+      - line_total_minor
+      - listing
+      - listing_name
+      - quantity
+      - seller_name
+      - unit_code
+      - unit_price_minor
+    OrderStatusEnum:
+      enum:
+      - pending
+      - confirmed
+      - shipped
+      - delivered
+      - completed
+      - cancelled
+      - disputed
+      - dispute_resolved
+      type: string
+      description: |-
+        * `pending` - Pending seller confirmation
+        * `confirmed` - Confirmed
+        * `shipped` - Shipped
+        * `delivered` - Delivered
+        * `completed` - Completed
+        * `cancelled` - Cancelled
+        * `disputed` - Disputed
+        * `dispute_resolved` - Dispute resolved
+    OutcomeEnum:
+      enum:
+      - buyer_favoured
+      - seller_favoured
+      type: string
+      description: |-
+        * `buyer_favoured` - Buyer favoured
+        * `seller_favoured` - Seller favoured
+    PaginatedAuditEventList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuditEvent'
+    PaginatedCropCategoryList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/CropCategory'
+    PaginatedDisputeList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Dispute'
+    PaginatedHarvestBatchList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/HarvestBatch'
+    PaginatedJournalList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Journal'
+    PaginatedLedgerAccountList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/LedgerAccount'
+    PaginatedListingList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Listing'
+    PaginatedOrderList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Order'
+    PaginatedRefundList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Refund'
+    PaginatedSettlementList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Settlement'
+    PaginatedSimulatedPaymentList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SimulatedPayment'
+    PaginatedStockMovementList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StockMovement'
+    PatchedBuyerProfileRequest:
+      type: object
+      properties:
+        business_name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        region:
+          type: string
+          maxLength: 100
+        location:
+          type: string
+          maxLength: 200
+    PatchedCropCategoryRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        slug:
+          type: string
+          minLength: 1
+          maxLength: 120
+          pattern: ^[-a-zA-Z0-9_]+$
+        description:
+          type: string
+        is_active:
+          type: boolean
+    PatchedFarmerProfileRequest:
+      type: object
+      properties:
+        display_name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        region:
+          type: string
+          maxLength: 100
+        location:
+          type: string
+          maxLength: 200
+    PatchedHarvestBatchRequest:
+      type: object
+      properties:
+        category:
+          type: string
+          format: uuid
+        quantity:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,9}(?:\.\d{0,3})?$
+        unit_code:
+          $ref: '#/components/schemas/UnitCodeEnum'
+        harvested_on:
+          type: string
+          format: date
+        client_sync_id:
+          type: string
+          format: uuid
+          nullable: true
+        resubmission_of:
+          type: string
+          format: uuid
+          nullable: true
+        notes:
+          type: string
+    PatchedListingRequest:
+      type: object
+      properties:
+        category:
+          type: string
+          format: uuid
+        name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        description:
+          type: string
+        unit_code:
+          $ref: '#/components/schemas/UnitCodeEnum'
+        unit_price_minor:
+          type: integer
+          minimum: 1
+        status:
+          $ref: '#/components/schemas/ListingStatusEnum'
+    PatchedUserProfileRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+    Refresh:
+      type: object
+      properties:
+        refresh:
+          type: string
+        access:
+          type: string
+          readOnly: true
+      required:
+      - access
+      - refresh
+    RefreshRequest:
+      type: object
+      properties:
+        refresh:
+          type: string
+          minLength: 1
+      required:
+      - refresh
+    Refund:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        payment:
+          type: string
+          format: uuid
+          readOnly: true
+        amount_minor:
+          type: integer
+          readOnly: true
+        currency:
+          type: string
+          readOnly: true
+        reason:
+          type: string
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/RefundStatusEnum'
+          readOnly: true
+        simulation_label:
+          type: string
+          readOnly: true
+        created_by:
+          type: string
+          format: uuid
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - amount_minor
+      - created_at
+      - created_by
+      - currency
+      - id
+      - payment
+      - reason
+      - simulation_label
+      - status
+    RefundStatusEnum:
+      enum:
+      - simulated_succeeded
+      type: string
+      description: '* `simulated_succeeded` - Simulated refund succeeded'
+    Registration:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        roles:
+          type: array
+          items:
+            type: string
+          readOnly: true
+      required:
+      - email
+      - id
+      - roles
+    RegistrationRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+        password_confirm:
+          type: string
+          writeOnly: true
+          minLength: 1
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        role:
+          allOf:
+          - $ref: '#/components/schemas/RoleEnum'
+          writeOnly: true
+          default: buyer
+        display_name:
+          type: string
+          writeOnly: true
+          minLength: 1
+          maxLength: 150
+        business_name:
+          type: string
+          writeOnly: true
+          minLength: 1
+          maxLength: 200
+        region:
+          type: string
+          writeOnly: true
+          maxLength: 100
+      required:
+      - email
+      - password
+      - password_confirm
+    RoleEnum:
+      enum:
+      - farmer
+      - buyer
+      type: string
+      description: |-
+        * `farmer` - farmer
+        * `buyer` - buyer
+    Settlement:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        payment:
+          type: string
+          format: uuid
+          readOnly: true
+        seller:
+          type: string
+          format: uuid
+          readOnly: true
+        amount_minor:
+          type: integer
+          readOnly: true
+        currency:
+          type: string
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/SettlementStatusEnum'
+          readOnly: true
+        simulation_label:
+          type: string
+          readOnly: true
+        created_by:
+          type: string
+          format: uuid
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - amount_minor
+      - created_at
+      - created_by
+      - currency
+      - id
+      - payment
+      - seller
+      - simulation_label
+      - status
+    SettlementStatusEnum:
+      enum:
+      - simulated_recorded
+      type: string
+      description: '* `simulated_recorded` - Simulated settlement recorded'
+    SimulatedPayment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        order:
+          type: string
+          format: uuid
+          readOnly: true
+        buyer:
+          type: string
+          format: uuid
+          readOnly: true
+        amount_minor:
+          type: integer
+          readOnly: true
+        currency:
+          type: string
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/SimulatedPaymentStatusEnum'
+          readOnly: true
+        simulation_label:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - amount_minor
+      - buyer
+      - created_at
+      - currency
+      - id
+      - order
+      - simulation_label
+      - status
+    SimulatedPaymentStatusEnum:
+      enum:
+      - simulated_succeeded
+      type: string
+      description: '* `simulated_succeeded` - Simulated payment succeeded'
+    StockMovement:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        batch:
+          type: string
+          format: uuid
+          readOnly: true
+        listing:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+        movement_type:
+          allOf:
+          - $ref: '#/components/schemas/MovementTypeEnum'
+          readOnly: true
+        quantity:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,9}(?:\.\d{0,3})?$
+          readOnly: true
+        reference:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - batch
+      - created_at
+      - id
+      - listing
+      - movement_type
+      - quantity
+      - reference
+    SyncOperationRequest:
+      type: object
+      properties:
+        operation_id:
+          type: string
+          format: uuid
+        operation_type:
+          $ref: '#/components/schemas/OperationTypeEnum'
+        schema_version:
+          type: integer
+        payload:
+          type: object
+          additionalProperties: {}
+      required:
+      - operation_id
+      - operation_type
+      - payload
+      - schema_version
+    UnitCodeEnum:
+      enum:
+      - kg
+      - tonne
+      - bag
+      - crate
+      - piece
+      type: string
+      description: |-
+        * `kg` - Kilogram
+        * `tonne` - Tonne
+        * `bag` - Bag
+        * `crate` - Crate
+        * `piece` - Piece
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        email:
+          type: string
+          format: email
+          readOnly: true
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        roles:
+          type: array
+          items:
+            type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - email
+      - id
+      - roles
+      - updated_at
+    UserProfileRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+    VerificationStatusEnum:
+      enum:
+      - unverified
+      - pending
+      - verified
+      - rejected
+      type: string
+      description: |-
+        * `unverified` - Unverified
+        * `pending` - Pending review
+        * `verified` - Verified
+        * `rejected` - Rejected
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

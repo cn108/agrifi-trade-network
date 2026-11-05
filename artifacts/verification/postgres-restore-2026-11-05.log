@@ -1,0 +1,83 @@
+Starting disposable PostgreSQL 16 backup/restore verification with simulated finance data.
+ Network agrifi-trade-network_default Creating 
+ Network agrifi-trade-network_default Creating 
+ Network agrifi-trade-network_default Created 
+ Network agrifi-trade-network_default Created 
+ Container agrifi-trade-network-postgres-test-1 Creating 
+ Container agrifi-trade-network-postgres-test-1 Created 
+ Container agrifi-trade-network-postgres-test-1 Starting 
+ Container agrifi-trade-network-postgres-test-1 Started 
+ Container agrifi-trade-network-postgres-test-1 Running 
+ Container agrifi-trade-network-postgres-test-1 Waiting 
+ Container agrifi-trade-network-postgres-test-1 Healthy 
+ Container agrifi-trade-network-test-run-0a06032eb60b Creating 
+ Container agrifi-trade-network-test-run-0a06032eb60b Created 
+Operations to perform:
+  Apply all migrations: accounts, admin, audit, auth, catalog, contenttypes, finance, idempotency, inventory, orders, sessions
+Running migrations:
+  Applying contenttypes.0001_initial... OK
+  Applying contenttypes.0002_remove_content_type_name... OK
+  Applying auth.0001_initial... OK
+  Applying auth.0002_alter_permission_name_max_length... OK
+  Applying auth.0003_alter_user_email_max_length... OK
+  Applying auth.0004_alter_user_username_opts... OK
+  Applying auth.0005_alter_user_last_login_null... OK
+  Applying auth.0006_require_contenttypes_0002... OK
+  Applying auth.0007_alter_validators_add_error_messages... OK
+  Applying auth.0008_alter_user_username_max_length... OK
+  Applying auth.0009_alter_user_last_name_max_length... OK
+  Applying auth.0010_alter_group_name_max_length... OK
+  Applying auth.0011_update_proxy_permissions... OK
+  Applying auth.0012_alter_user_first_name_max_length... OK
+  Applying accounts.0001_initial... OK
+  Applying accounts.0002_userrole... OK
+  Applying accounts.0003_revokedrefreshtoken... OK
+  Applying accounts.0004_profiles... OK
+  Applying admin.0001_initial... OK
+  Applying admin.0002_logentry_remove_auto_add... OK
+  Applying admin.0003_logentry_add_action_flag_choices... OK
+  Applying catalog.0001_initial... OK
+  Applying inventory.0001_initial... OK
+  Applying inventory.0002_stock_ledger_and_review... OK
+  Applying inventory.0003_immutable_ledger_triggers... OK
+  Applying audit.0001_initial... OK
+  Applying audit.0002_immutable_trigger... OK
+  Applying orders.0001_initial... OK
+  Applying orders.0002_immutable_snapshot_triggers... OK
+  Applying orders.0003_alter_order_status... OK
+  Applying finance.0001_initial... OK
+  Applying finance.0002_posting_and_immutability_triggers... OK
+  Applying idempotency.0001_initial... OK
+  Applying idempotency.0002_retention_created_index... OK
+  Applying inventory.0004_alter_reservation_expires_at... OK
+  Applying inventory.0005_harvest_batch_resubmission... OK
+  Applying sessions.0001_initial... OK
+ Container agrifi-trade-network-postgres-test-1 Running 
+ Container agrifi-trade-network-postgres-test-1 Waiting 
+ Container agrifi-trade-network-postgres-test-1 Healthy 
+ Container agrifi-trade-network-test-run-3974d1856d2a Creating 
+ Container agrifi-trade-network-test-run-3974d1856d2a Created 
+27 objects imported automatically (use -v 2 for details).
+
+Simulated payment and journal created for disposable restore verification.
+PASS SELECT count(*) FROM accounts_user -> 5 rows
+PASS SELECT count(*) FROM catalog_listing -> 6 rows
+PASS SELECT count(*) FROM inventory_stockmovement -> 12 rows
+PASS SELECT count(*) FROM audit_auditevent -> 15 rows
+PASS SELECT count(*) FROM finance_journal -> 1 rows
+PASS SELECT count(*) FROM finance_journalline -> 2 rows
+ Container agrifi-trade-network-postgres-test-1 Running 
+ Container agrifi-trade-network-postgres-test-1 Waiting 
+ Container agrifi-trade-network-postgres-test-1 Healthy 
+ Container agrifi-trade-network-test-run-69e9bf8f7193 Creating 
+ Container agrifi-trade-network-test-run-69e9bf8f7193 Created 
+PASS Django migration check on restored database.
+PASS restored immutable and balance triggers: 12
+PASS restored journal headers and lines: 0 unbalanced.
+ Container agrifi-trade-network-postgres-test-1 Stopping 
+ Container agrifi-trade-network-postgres-test-1 Stopped 
+ Container agrifi-trade-network-postgres-test-1 Removing 
+ Container agrifi-trade-network-postgres-test-1 Removed 
+ Network agrifi-trade-network_default Removing 
+ Network agrifi-trade-network_default Removed 
+Disposable PostgreSQL stopped and removed.

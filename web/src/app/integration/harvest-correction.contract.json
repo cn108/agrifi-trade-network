@@ -1,0 +1,9 @@
+{
+  "description": "Shared Angular <-> Django contract for the harvest-batch correction flow. Consumed by web/src/app/integration/harvest-correction.contract.spec.ts and backend/agrifi/inventory/test_correction_contract.py.",
+  "correction_request_keys": ["category", "client_sync_id", "harvested_on", "notes", "quantity", "resubmission_of", "unit_code"],
+  "reject_request_keys": ["reason"],
+  "response_keys_read_by_angular": [
+    "id", "category", "quantity", "unit_code", "harvested_on", "client_sync_id", "notes",
+    "status", "rejection_reason", "resubmission_of", "correction_id", "created_at"
+  ]
+}

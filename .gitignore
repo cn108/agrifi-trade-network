@@ -1,0 +1,45 @@
+# Local credentials and environment files (keep the placeholder template).
+.env
+.env.*
+!.env.example
+
+# Python
+**/.venv/
+**/.venv-openapi/
+**/venv/
+**/__pycache__/
+*.py[cod]
+*.sqlite3
+**/.pytest_cache/
+**/.mypy_cache/
+**/.ruff_cache/
+/backend/staticfiles/
+
+# JavaScript and browser tooling
+**/node_modules/
+**/dist/
+**/coverage/
+**/.angular/
+**/playwright-report/
+**/test-results/
+
+# .NET and native build output
+**/bin/
+**/obj/
+**/.vs/
+*.apk
+*.aab
+*.ipa
+*.msix
+*.tmp
+*.tmp.*
+
+# Local logs and editor/OS files
+/pg-test.log
+*.local.log
+.DS_Store
+Thumbs.db
+.idea/
+
+# Developer-only environment
+.venv-openapi/
