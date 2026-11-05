@@ -36,6 +36,14 @@ The 82% figure is an estimate against the supplied build specification, not a te
 
 More detail: [build specification](AgriFi_AI_Agent_Build_Specification.md), [architecture](docs/ARCHITECTURE.md), [decisions](docs/DECISIONS.md), [project status](docs/PROJECT_STATUS.md), [operations](docs/OPERATIONS.md), [production readiness](docs/PRODUCTION_READINESS.md), [accounting review](docs/ACCOUNTING_REVIEW.md), and [API contract](docs/API_CONTRACT.md).
 
+## Web app screenshots
+
+These screens were captured from the Angular app using isolated seeded demo accounts and data.
+
+| Buyer dashboard | Marketplace | Farmer workspace |
+|---|---|---|
+| <img src="docs/screenshots/buyer-dashboard.png" alt="AgriFi buyer dashboard with activity summary and current offers" width="320"> | <img src="docs/screenshots/marketplace.png" alt="AgriFi marketplace with crop search and seller offer cards" width="320"> | <img src="docs/screenshots/farmer-workspace.png" alt="AgriFi farmer workspace for harvest submissions, listings, and stock allocation" width="320"> |
+
 ## Local development
 
 ### Requirements
