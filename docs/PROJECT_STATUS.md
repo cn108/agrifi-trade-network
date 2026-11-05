@@ -19,7 +19,7 @@ AgriFi is a Nigerian-first B2B agricultural marketplace. Its first release cover
 | MAUI Core | 48/48 xUnit tests pass, including buffered login-body and legacy API validation error coverage. MAUI Windows target builds with 0 warnings and 0 errors after updating SQLite dependencies. `dotnet test` emitted a non-blocking NU1900 warning because vulnerability metadata access was denied. | Verified for Core tests and Windows compile |
 | MAUI Android | Local `net10.0-android` build succeeds with 0 errors and produces APKs. One non-blocking XA0033 warning remains because Android tooling does not parse the Microsoft OpenJDK 21.0.13.0.2 version string. On Android 15 API 35, valid farmer sign-in loaded profile/categories and the session restored after app restart; invalid credentials displayed the API rejection, negative quantity was rejected before a local draft was saved, and an unavailable API displayed a short network message. The app stayed open through each case and was left in the signed-in workspace. | Compile and these emulator journeys verified locally; broader device coverage pending |
 | Dependency security | Updated `sqlite-net-pcl` from 1.9.172 to 1.11.285 in Core and UI projects. NuGet reports no vulnerable packages for Core; `npm audit` reports 0 vulnerabilities. | Updated; recheck full platform matrix in CI |
-| CI | PostgreSQL, Angular/E2E, MAUI Core tests, and Android compile workflows are defined in `.github/workflows/`; this workspace has no Git repository or remote, so hosted workflows cannot be triggered here. Local PostgreSQL and client equivalents are being run. | Hosted CI not verified |
+| CI | PostgreSQL, Angular/E2E, MAUI Core tests, and Android compile workflows are defined in `.github/workflows/`. The initial commit is now on the public `cn108/agrifi-trade-network` repository; GitHub Actions Backend and Clients runs have started. | Hosted runs in progress |
 | OpenAPI | `drf-spectacular --validate --fail-on-warn` passes using the local OpenAPI environment. | Verified locally; CI run pending |
 | PostgreSQL backup/restore | Disposable PostgreSQL 16 database with demo stock/audit data and one simulated payment/journal was dumped, restored to a new database, and checked. Six table counts matched; migrations, 12 immutable/balance triggers, and journal balance passed. Log: `artifacts/verification/postgres-restore-2026-11-05.log`. | Verified for this disposable scenario; production schedule/storage pending |
 | Operational monitoring | Compose API health now uses `/readyz/`; liveness/readiness probes respond locally and JSON logs carry request IDs. Alert rules and delivery are documented but no monitoring stack or alert route is deployed. | Baseline improved; monitoring service pending |
@@ -59,7 +59,7 @@ Before the Playwright API was isolated, its first runs used the pre-existing API
 
 ## Remaining release work
 
-1. Run hosted CI end to end and address platform differences; no repository remote is configured in this workspace.
+1. Review the latest hosted CI runs and address any runner-specific failures; local suites alone do not replace hosted CI evidence.
 2. Perform a farmer sign-in/offline capture/sync journey on Android against the API; confirm the configured Android SDK/JDK paths are available on the CI runner.
 3. Configure a monitoring service and alert routes, then exercise failure/backup-freshness alerts; the current Compose readiness check and runbook are only the baseline.
 4. Provide production TLS/proxy/secret/cache settings and repeat `check --deploy`.
