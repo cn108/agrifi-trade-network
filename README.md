@@ -32,7 +32,7 @@ AgriFi is a Nigeria-first B2B agricultural marketplace for farmers, bulk buyers,
 | Android | MAUI Android | Build succeeds; sign-in, profile/category loading, validation, session restore, and unavailable-API handling checked on Android 15 API 35 emulator |
 | Backup/restore | Disposable PostgreSQL 16 drill | Restore and integrity checks passed for the documented test scenario |
 
-The 82% figure is an estimate against the supplied build specification, not a test result or production-readiness score. Remaining work includes hosted CI confirmation, Android offline capture/sync verification, deployed monitoring and alerting, production configuration, performance evidence, and external accounting/legal review. The simulated chart and settlement/refund semantics remain subject to accountant review.
+The 82% figure is an estimate against the supplied build specification, not a test result or production-readiness score. Hosted CI has passed for the published commit, including PostgreSQL tests, Angular browser checks/build, MAUI Core tests, and Android compilation. Remaining work includes Android offline capture/sync verification, deployed monitoring and alerting, production configuration, performance evidence, and external accounting/legal review. The simulated chart and settlement/refund semantics remain subject to accountant review.
 
 More detail: [build specification](AgriFi_AI_Agent_Build_Specification.md), [architecture](docs/ARCHITECTURE.md), [decisions](docs/DECISIONS.md), [project status](docs/PROJECT_STATUS.md), [operations](docs/OPERATIONS.md), [production readiness](docs/PRODUCTION_READINESS.md), [accounting review](docs/ACCOUNTING_REVIEW.md), and [API contract](docs/API_CONTRACT.md).
 

@@ -2,7 +2,7 @@
 
 **Updated:** 2026-11-05  
 **Milestone:** MVP implementation present; release verification incomplete  
-**Production readiness:** Not approved. PostgreSQL suite and a disposable restore scenario now pass locally; hosted CI, Android device verification, production deployment/operations, and external reviews remain incomplete.
+**Production readiness:** Not approved. PostgreSQL suite and a disposable restore scenario pass locally; hosted backend/client CI passed on the published commit, including PostgreSQL tests, Angular browser checks/build, MAUI Core tests, and Android compilation. Android offline device verification, production deployment/operations, and external reviews remain incomplete.
 
 ## Product scope
 
@@ -13,14 +13,14 @@ AgriFi is a Nigerian-first B2B agricultural marketplace. Its first release cover
 | Area | Current evidence | State |
 |---|---|---|
 | Django API | SQLite suite: 280 run, 259 passed, 21 skipped, 0 failures (2026-11-05). `manage.py check` and `makemigrations --check --dry-run` pass with SQLite selected. PostgreSQL behavior is covered separately below. | Verified locally |
-| PostgreSQL | PostgreSQL 16 Compose suite: 280 run, 279 passed, 1 skipped, 0 failures (2026-11-05). Clean migrations and reversal/re-application passed; PostgreSQL trigger, deferred constraint, and concurrency tests ran. Full log: `artifacts/verification/postgresql16-2026-11-05.log`. | Verified locally; CI run pending |
+| PostgreSQL | PostgreSQL 16 Compose suite: 280 run, 279 passed, 1 skipped, 0 failures (2026-11-05). Clean migrations and reversal/re-application passed; PostgreSQL trigger, deferred constraint, and concurrency tests ran. Full log: `artifacts/verification/postgresql16-2026-11-05.log`. | Verified locally and in hosted Backend workflow |
 | Angular | 21 passed, 1 skipped; production build passes. Playwright Chromium: 5/5 tests passed against an isolated temporary SQLite API, including buyer lifecycle, operations/finance, and farmer workspace. | Verified for these journeys |
 | Angular visual design | Refreshed shared palette, responsive dashboard and catalogue layouts, account surfaces, keyboard focus, and reduced-motion handling. Production build passes; the buyer dashboard loaded in the running browser at desktop width. Narrow viewport review remains pending. | Build and desktop preview verified |
 | MAUI Core | 48/48 xUnit tests pass, including buffered login-body and legacy API validation error coverage. MAUI Windows target builds with 0 warnings and 0 errors after updating SQLite dependencies. `dotnet test` emitted a non-blocking NU1900 warning because vulnerability metadata access was denied. | Verified for Core tests and Windows compile |
 | MAUI Android | Local `net10.0-android` build succeeds with 0 errors and produces APKs. One non-blocking XA0033 warning remains because Android tooling does not parse the Microsoft OpenJDK 21.0.13.0.2 version string. On Android 15 API 35, valid farmer sign-in loaded profile/categories and the session restored after app restart; invalid credentials displayed the API rejection, negative quantity was rejected before a local draft was saved, and an unavailable API displayed a short network message. The app stayed open through each case and was left in the signed-in workspace. | Compile and these emulator journeys verified locally; broader device coverage pending |
 | Dependency security | Updated `sqlite-net-pcl` from 1.9.172 to 1.11.285 in Core and UI projects. NuGet reports no vulnerable packages for Core; `npm audit` reports 0 vulnerabilities. | Updated; recheck full platform matrix in CI |
-| CI | PostgreSQL, Angular/E2E, MAUI Core tests, and Android compile workflows are defined in `.github/workflows/`. The initial commit is now on the public `cn108/agrifi-trade-network` repository; GitHub Actions Backend and Clients runs have started. | Hosted runs in progress |
-| OpenAPI | `drf-spectacular --validate --fail-on-warn` passes using the local OpenAPI environment. | Verified locally; CI run pending |
+| CI | PostgreSQL, Angular unit/browser tests and build, MAUI Core tests, and Android compile workflows are defined in `.github/workflows/`. Both Backend and Clients workflows passed on commit `38666d02f23cf4dbe14369177046024cf0576d81` (2026-11-05). | Hosted success |
+| OpenAPI | `drf-spectacular --validate --fail-on-warn` passes using the local OpenAPI environment. | Verified locally; hosted Backend workflow passed |
 | PostgreSQL backup/restore | Disposable PostgreSQL 16 database with demo stock/audit data and one simulated payment/journal was dumped, restored to a new database, and checked. Six table counts matched; migrations, 12 immutable/balance triggers, and journal balance passed. Log: `artifacts/verification/postgres-restore-2026-11-05.log`. | Verified for this disposable scenario; production schedule/storage pending |
 | Operational monitoring | Compose API health now uses `/readyz/`; liveness/readiness probes respond locally and JSON logs carry request IDs. Alert rules and delivery are documented but no monitoring stack or alert route is deployed. | Baseline improved; monitoring service pending |
 | Accounting review | Prepared `docs/ACCOUNTING_REVIEW.md` with simulated postings, questions, and reviewer record. No qualified accountant has reviewed or approved it. | External review pending |
@@ -59,13 +59,12 @@ Before the Playwright API was isolated, its first runs used the pre-existing API
 
 ## Remaining release work
 
-1. Review the latest hosted CI runs and address any runner-specific failures; local suites alone do not replace hosted CI evidence.
-2. Perform a farmer sign-in/offline capture/sync journey on Android against the API; confirm the configured Android SDK/JDK paths are available on the CI runner.
-3. Configure a monitoring service and alert routes, then exercise failure/backup-freshness alerts; the current Compose readiness check and runbook are only the baseline.
-4. Provide production TLS/proxy/secret/cache settings and repeat `check --deploy`.
-5. Obtain qualified accounting review of the simulated chart and refund/settlement semantics. Keep all finance operations simulation-only until then.
-6. Obtain legal/privacy review of the retention policy and confirm off-host retention/archive controls before deployment.
-7. Gather performance/load evidence and reconcile this status with `COMPLIANCE_ASSESSMENT.md` before production approval.
+1. Perform a farmer sign-in/offline capture/sync journey on Android against the API; hosted Android compilation passed, but offline sync has not been verified on-device.
+2. Configure a monitoring service and alert routes, then exercise failure/backup-freshness alerts; the current Compose readiness check and runbook are only the baseline.
+3. Provide production TLS/proxy/secret/cache settings and repeat `check --deploy`.
+4. Obtain qualified accounting review of the simulated chart and refund/settlement semantics. Keep all finance operations simulation-only until then.
+5. Obtain legal/privacy review of the retention policy and confirm off-host retention/archive controls before deployment.
+6. Gather performance/load evidence and reconcile this status with `COMPLIANCE_ASSESSMENT.md` before production approval.
 
 ## Scope decisions
 
